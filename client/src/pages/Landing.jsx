@@ -3,12 +3,16 @@ import { Receipt, ArrowRight, Wallet, Users, Zap, Shield, ChevronRight } from 'l
 import Button from '../components/Button';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-
+import { useAuth } from '../context/Context';
 
 
 const Landing= () => {
   const navigate=useNavigate()
+  const {isLoggedIn}=useAuth()
   const handlesubmit=()=>{
+    if(isLoggedIn){
+      return navigate('/dashboard')
+    }
     navigate('/signup')
   }
 

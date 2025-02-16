@@ -3,6 +3,7 @@ import { Receipt, ArrowRight, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {useAuth} from '../context/Context';
 
 const Signin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,14 +11,15 @@ const Signin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const { storetokeninls } = useAuth()
   const navigate = useNavigate();
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-
+    
     try {
       const response = await fetch('http://localhost:3000/routes/signin', {
         method: "POST",
@@ -29,6 +31,7 @@ const Signin = () => {
       console.log(response)
       const res_data = await response.json()
       if (response.ok) {
+        storetokeninls(res_data.token)
         setuser({ username: "", email: "", password: "" });
         toast.success("Login successfull")
         navigate('/dashboard')

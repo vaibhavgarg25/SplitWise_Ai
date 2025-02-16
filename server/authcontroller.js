@@ -48,7 +48,17 @@ const login = async (req, res) => {
     }
 }
 
+const user = async (req, res) => {
+    try {
+        const userdata=req.user
+        return res.status(200).json(userdata)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     signup,
-    login
+    login,
+    user
 }

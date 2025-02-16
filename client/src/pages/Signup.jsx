@@ -4,12 +4,15 @@ import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../context/Context';
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [user,setuser]=useState({ username: "", email: "", password: "" });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const storetokeninls=useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +31,7 @@ const SignUp = () => {
       const res_data=await response.json()
 
       if (response.ok) {
-        // storetokeninls(res_data.token)
+        storetokeninls(res_data.token)
         setuser({ username: "", email: "", password: "" });
         toast.success("Signup successfull")
         navigate('/signin')

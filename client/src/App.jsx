@@ -5,6 +5,8 @@ import Landing2 from './pages/Landing2';
 import Signin from './pages/Signin';
 import SignUp from './pages/Signup';
 import Navbar from './components/Navbar';
+import Logout from './pages/Logout';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -16,6 +18,9 @@ function App() {
       <Route path="/dashboard" element={<Landing2/>} />
       <Route path="/signin" element={<Signin/>} />
       <Route path="/signup" element={<SignUp/>} />
+      <Route path="/logout" element={<Logout/>} />
+      <Route path="/settings" element={<Settings/>} />
+      <Route path="*" element={<h1>404 Not Found</h1>} />
     </Routes>
     </BrowserRouter>
     </>
