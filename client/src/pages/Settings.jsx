@@ -4,11 +4,14 @@ import Card from '../components/Card';
 import Button from '../components/Button';
 import { useAuth } from '../context/Context';
 import Navbar2 from '../components/Navbar2';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const Settings = () => {
   const { AuthorizationToken } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
-  const [user, setUser] = useState({ username: '', email: '' });
+  const [user, setUser] = useState({_id:'',username: '', email: '' });
+  const params=useParams()
 
   const fetchData = async () => {
     const response = await fetch('http://localhost:3000/routes/user', {
@@ -18,23 +21,32 @@ const Settings = () => {
       },
     });
     const data = await response.json();
-    console.log(data);
-    setUser(data);
+    // console.log(data);
+    setUser({ _id:data._id,username: data.username, email: data.email });
   };
 
-  const handleUpdate = async () => {
-    const response = await fetch('http://localhost:3000/routes/user', {
-      method: "PUT",
-      headers: {
-        Authorization: AuthorizationToken,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(user)
-    });
-    const data = await response.json();
-    console.log(data);
-    setUser(data);
-  };
+  const handleUpdate = async (e) => {
+    e.preventDefault()
+    const id=user._id
+    try {
+        const response=await fetch(`http://localhost:3000/routes/update/${id}`,{
+            method:"PATCH",
+            headers:{
+                'Content-Type':'application/json',
+                Authorization:AuthorizationToken,
+            },
+            body:JSON.stringify(user)
+        })
+        if(response.ok){
+            toast.success("updated successfully")
+        }
+        else{
+            toast.error("update unsuccessfull")
+        }
+    } catch (error) {
+        console.log(error)
+    }
+  }
 
   useEffect(() => {
     fetchData();

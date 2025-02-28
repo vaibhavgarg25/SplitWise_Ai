@@ -10,5 +10,9 @@ const authmiddleware=require('./middlewares/auth-middlewares')
 router.route('/signup').post(validate(signupschema),authcontroller.signup)
 router.route('/signin').post(validate(loginschema),authcontroller.login)
 router.route('/user').get(authmiddleware,authcontroller.user)
-
+router.route('/users').get(authmiddleware,authcontroller.getusers)
+router.route('/creategroup').post(authmiddleware,authcontroller.creategroup)
+router.route('/getgroups/:id').get(authmiddleware,authcontroller.getgroups)
+router.route('/update/:id').patch(authmiddleware,authcontroller.updateusersbyid)
+router.route('/deletegroup/:id').delete(authmiddleware,authcontroller.deletegroupbyid)
 module.exports=router;

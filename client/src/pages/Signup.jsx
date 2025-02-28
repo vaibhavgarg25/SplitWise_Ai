@@ -61,7 +61,7 @@ const SignUp = () => {
 
   const navigate=useNavigate()
   return (
-    <div className="min-h-screen bg-[#FCFCFD] flex">
+    <div className="mt-10 bg-[#FCFCFD] flex">
       {/* Right Panel - Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-2">

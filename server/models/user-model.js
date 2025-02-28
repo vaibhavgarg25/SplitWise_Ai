@@ -16,6 +16,14 @@ const Userschema=new mongoose.Schema({
         type:String,
         required:true,
         unique:true,
+    },
+    groups:{
+        type:Array,
+        default:[]
+    },
+    createdAt:{
+        type:Date,
+        default:new Date(),
     }
 })
 

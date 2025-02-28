@@ -7,6 +7,7 @@ import SignUp from './pages/Signup';
 import Navbar from './components/Navbar';
 import Logout from './pages/Logout';
 import Settings from './pages/Settings';
+import Groups from './pages/Group';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/signup" element={<SignUp/>} />
       <Route path="/logout" element={<Logout/>} />
       <Route path="/settings" element={<Settings/>} />
+      <Route path="/groups" element={<Groups/>} />
       <Route path="*" element={<h1>404 Not Found</h1>} />
     </Routes>
     </BrowserRouter>

@@ -19,7 +19,7 @@ const Landing= () => {
   return (
     <div className="min-h-screen bg-[#FCFCFD]">
       {/* Hero Section */}
-      <div className="relative pt-32 pb-20 sm:pt-40 sm:pb-24">
+      <div className="relative pt-32 pb-20 sm:pt-14 sm:pb-24">
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute left-[50%] top-0 h-[1000px] w-[1000px] -translate-x-1/2 stroke-gray-200 [mask-image:radial-gradient(100%_100%_at_top_center,white,transparent)]">
             <svg className="absolute inset-0 h-full w-full" aria-hidden="true">
