@@ -84,7 +84,7 @@ const updateusersbyid = async (req, res, next) => {
 const creategroup = async (req, res, next) => {
     try {
         const { name, description, members } = req.body;
-        const ids=members.map((ele)=>ele._id)
+        const ids = members.map((ele) => new mongoose.Types.ObjectId(ele._id));
         const newgroup = await Group.create({ groupname: name, groupdesc: description ,members:ids})
         const updateuser = await User.updateMany({ _id: { $in: members } }, { $push: { groups: newgroup._id } })
         return res.status(201).json(newgroup)
@@ -139,6 +139,28 @@ const deletegroupbyid = async (req, res, next) => {
     }
 };
 
+const getgroupmembers=async(req,res,next)=>{
+    try {
+        const idString = req.params.id
+        const objectId = new mongoose.Types.ObjectId(idString);
+        const data=await Group.aggregate([
+            {$match:{_id:objectId}},
+            {$lookup:{
+                from:"users",
+                localField:"members",
+                foreignField:"_id",
+                as:"memberdetails"
+            }},{$project:{
+                memberdetails:1,
+                groupname:1
+            }}
+        ])
+        return res.status(201).json(data)
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     signup,
     login,
@@ -147,5 +169,6 @@ module.exports = {
     creategroup,
     getusers,
     getgroups,
-    deletegroupbyid
+    deletegroupbyid,
+    getgroupmembers
 }

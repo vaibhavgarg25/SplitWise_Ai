@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Logout from './pages/Logout';
 import Settings from './pages/Settings';
 import Groups from './pages/Group';
+import GroupDetails from './pages/GroupDetails';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
       <Route path="/logout" element={<Logout/>} />
       <Route path="/settings" element={<Settings/>} />
       <Route path="/groups" element={<Groups/>} />
+      <Route path="/groups/:groupId" element={<GroupDetails />} />
       <Route path="*" element={<h1>404 Not Found</h1>} />
     </Routes>
     </BrowserRouter>

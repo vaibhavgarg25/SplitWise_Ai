@@ -33,7 +33,7 @@ const Navbar2 = () => {
               <span>Dashboard</span>
             </button>
             
-            <button 
+            {/* <button 
               onClick={() =>{
                 setActiveTab('expenses')
                 navigate('/expenses')} }
@@ -43,7 +43,7 @@ const Navbar2 = () => {
             >
               <DollarSign className="w-5 h-5" />
               <span>Expenses</span>
-            </button>
+            </button> */}
             
             <button 
               onClick={() =>{

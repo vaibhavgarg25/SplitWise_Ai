@@ -15,4 +15,5 @@ router.route('/creategroup').post(authmiddleware,authcontroller.creategroup)
 router.route('/getgroups/:id').get(authmiddleware,authcontroller.getgroups)
 router.route('/update/:id').patch(authmiddleware,authcontroller.updateusersbyid)
 router.route('/deletegroup/:id').delete(authmiddleware,authcontroller.deletegroupbyid)
+router.route('/getgroupmembers/:id').get(authmiddleware,authcontroller.getgroupmembers)
 module.exports=router;

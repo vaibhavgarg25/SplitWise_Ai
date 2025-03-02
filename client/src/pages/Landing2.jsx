@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { 
   Users, 
   Receipt, 
@@ -14,10 +14,29 @@ import Dashboard from '../pages/Dashboard';
 import Button from '../components/Button';
 import { NavLink } from 'react-router-dom';
 import Navbar2 from '../components/Navbar2';
+import { useAuth } from '../context/Context';
 
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [user,setUser]=useState({_id:'',username: '', email: '' })
+  const {AuthorizationToken}=useAuth()
+  
+  const fetchuser=async()=>{
+    const response = await fetch('http://localhost:3000/routes/user', {
+      method: "GET",
+      headers: {
+        Authorization: AuthorizationToken,
+      },
+    });
+    const data = await response.json();
+    // console.log(data);
+    setUser({ _id:data._id,username: data.username, email: data.email });
+  };
 
+  useEffect(() => {
+   fetchuser()
+  }, [])
+  
   return (
     <ExpenseProvider>
       <div className="min-h-screen bg-gray-50 flex">
@@ -34,15 +53,7 @@ function App() {
                 </h2>
               </div>
               <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Profile"
-                    className="w-8 h-8 rounded-full"
-                  />
-                  <span className="text-sm font-medium text-gray-700">John Doe</span>
-                </div>
-                
+              <span className="text-lg font-medium text-gray-700">Welcome, {user.username}</span>
               </div>
             </div>
           </header>

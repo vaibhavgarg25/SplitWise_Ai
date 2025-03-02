@@ -10,6 +10,7 @@ import Modal from '../components/Modal';
 import Navbar2 from '../components/Navbar2';
 import { useAuth } from '../context/Context';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Groups = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -22,6 +23,7 @@ const Groups = () => {
   const [groups, setGroups] = useState([]);
   const [members, setmember] = useState([])
   const { AuthorizationToken } = useAuth()
+  const navigate = useNavigate()
 
   const fetchUser = async () => {
     try {
@@ -136,17 +138,17 @@ const Groups = () => {
     }
   };
 
-  const handleDelete=async(id)=>{
+  const handleDelete = async (id) => {
     try {
-      const response=await fetch(`http://localhost:3000/routes/deletegroup/${id}`,{
-        method:"DELETE",
-        headers:{
-          Authorization:AuthorizationToken
+      const response = await fetch(`http://localhost:3000/routes/deletegroup/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: AuthorizationToken
         }
       })
-      const data=await response.json()
+      const data = await response.json()
       // console.log(data)
-      if(response.ok){
+      if (response.ok) {
         fetchGroups()
         toast.success("group deleted successfully")
       }
@@ -154,6 +156,8 @@ const Groups = () => {
       console.log(error)
     }
   }
+
+  
 
   return (
     <div className='flex'>
@@ -176,7 +180,10 @@ const Groups = () => {
             <Card
               key={group._id}
               className={`hover:shadow-lg hover:border-indigo-700 transition-all duration-200 cursor-pointer ${selectedGroup?._id === group._id ? 'ring-2 ring-indigo-500' : ''}`}
-              onClick={() => setSelectedGroup(group)}
+              onClick={() => {
+                setSelectedGroup(group);
+                navigate(`/groups/${group._id}`); // Navigate to GroupDetails
+              }}
             >
               <div className="p-4 space-y-4">
                 <div className="flex justify-between">
@@ -186,8 +193,9 @@ const Groups = () => {
                   </div>
                   <button
                     className="text-gray-400 hover:text-red-500"
-                    onClick={() => {
-                      handleDelete(group._id)
+                    onClick={(e) => {
+                      e.stopPropagation(); 
+                      handleDelete(group._id);
                     }}
                   >
                     <Trash2 className="w-5 h-5" />
@@ -196,7 +204,7 @@ const Groups = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex -space-x-2">
                     {users
-                      .filter(user => group.members.includes(user._id)) 
+                      .filter(user => group.members.includes(user._id))
                       .map(user => (
                         <img
                           key={user._id}
@@ -207,7 +215,6 @@ const Groups = () => {
                         />
                       ))}
                   </div>
-
                   <div className="flex items-center text-indigo-600">
                     <span>₹{group.totalBalance?.toFixed(2)}</span>
                     <ArrowRight className="w-4 h-4 ml-1" />
@@ -217,6 +224,7 @@ const Groups = () => {
             </Card>
           ))}
         </div>
+
 
         <Modal isOpen={showCreateModal} onClose={() => setShowCreateModal(false)} title="Create New Group">
           <div className="space-y-6">
