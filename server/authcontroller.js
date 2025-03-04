@@ -2,7 +2,8 @@ const express = require('express');
 const User = require('./models/user-model')
 const bcrypt = require('bcryptjs')
 const Group = require('./models/group-model')
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const Expense = require('./models/expense-model');
 
 
 const signup = async (req, res) => {
@@ -85,7 +86,7 @@ const creategroup = async (req, res, next) => {
     try {
         const { name, description, members } = req.body;
         const ids = members.map((ele) => new mongoose.Types.ObjectId(ele._id));
-        const newgroup = await Group.create({ groupname: name, groupdesc: description ,members:ids})
+        const newgroup = await Group.create({ groupname: name, groupdesc: description, members: ids })
         const updateuser = await User.updateMany({ _id: { $in: members } }, { $push: { groups: newgroup._id } })
         return res.status(201).json(newgroup)
     } catch (error) {
@@ -101,23 +102,23 @@ const getgroups = async (req, res, next) => {
         const groups = await User.aggregate([
             { $match: { _id: objectId } },
             {
-              $lookup: {
-                from: "groups",
-                localField: "groups",
-                foreignField: "_id",
-                as: "groupdetails"
-              }
+                $lookup: {
+                    from: "groups",
+                    localField: "groups",
+                    foreignField: "_id",
+                    as: "groupdetails"
+                }
             },
             {
-              $project: {
-                _id: 0,
-                username:0,
-                email:0,
-                password:0,
-                __v:0 // Remove unnecessary field
-              }
+                $project: {
+                    _id: 0,
+                    username: 0,
+                    email: 0,
+                    password: 0,
+                    __v: 0 // Remove unnecessary field
+                }
             }
-          ]);
+        ]);
         return res.status(200).json(groups[0].groupdetails)
     } catch (error) {
         next(error)
@@ -139,23 +140,57 @@ const deletegroupbyid = async (req, res, next) => {
     }
 };
 
-const getgroupmembers=async(req,res,next)=>{
+const getgroupmembers = async (req, res, next) => {
     try {
         const idString = req.params.id
         const objectId = new mongoose.Types.ObjectId(idString);
-        const data=await Group.aggregate([
-            {$match:{_id:objectId}},
-            {$lookup:{
-                from:"users",
-                localField:"members",
-                foreignField:"_id",
-                as:"memberdetails"
-            }},{$project:{
-                memberdetails:1,
-                groupname:1
-            }}
+        const data = await Group.aggregate([
+            { $match: { _id: objectId } },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "members",
+                    foreignField: "_id",
+                    as: "memberdetails"
+                }
+            }, {
+                $project: {
+                    memberdetails: 1,
+                    groupname: 1
+                }
+            }
         ])
         return res.status(201).json(data)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getexpenses = async (req, res, next) => {
+    try {
+        const idString = req.params.id
+        const objectId = new mongoose.Types.ObjectId(idString);
+        const data = await Expense.findOne(
+            { groupId: objectId },
+            { _id: 0, expenses: 1 }
+        );
+        return res.status(201).json(data.expenses)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getsplit = async (req, res, next) => {
+    try {
+        const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const prompt = "who will win today in india vs aus";
+
+        const result = await model.generateContent(prompt);
+        return res.status(201).json(result.response.text())
     } catch (error) {
         next(error)
     }
@@ -170,5 +205,7 @@ module.exports = {
     getusers,
     getgroups,
     deletegroupbyid,
-    getgroupmembers
+    getgroupmembers,
+    getexpenses,
+    getsplit
 }

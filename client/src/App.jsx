@@ -9,6 +9,8 @@ import Logout from './pages/Logout';
 import Settings from './pages/Settings';
 import Groups from './pages/Group';
 import GroupDetails from './pages/GroupDetails';
+import UnequalSplitting from './pages/UnequalSplitting';
+import EqualSplitting from './pages/EqualSplitting';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
       <Route path="/logout" element={<Logout/>} />
       <Route path="/settings" element={<Settings/>} />
       <Route path="/groups" element={<Groups/>} />
+      <Route path="/groups/:groupId/split/unequal" element={<UnequalSplitting/>} />
+      <Route path="/groups/:groupId/split/equal" element={<EqualSplitting/>} />
       <Route path="/groups/:groupId" element={<GroupDetails />} />
       <Route path="*" element={<h1>404 Not Found</h1>} />
     </Routes>
