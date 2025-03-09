@@ -6,7 +6,6 @@ const routes=require('./routes')
 const connectdb=require('./utils/db')
 const errormiddleware=require('./middlewares/error-middleware')
 const cors=require('cors')
-const api=require('./api')
 
 const corsOptions={
     origin:"http://localhost:5173",
@@ -16,7 +15,6 @@ const corsOptions={
 app.use(cors(corsOptions))
 app.use(express.json())
 app.use('/routes',routes)
-app.use('/api',api)
 app.use(errormiddleware)
 
 connectdb().then(()=>{

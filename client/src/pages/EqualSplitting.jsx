@@ -31,7 +31,7 @@ const EqualSplitting = () => {
       const newdata = data[0].memberdetails;
       const groupname = data[0].groupname;
       setGroup(groupname);
-      
+
       // Initialize all members as selected by default
       const membersObj = {};
       newdata.forEach(member => {
@@ -62,12 +62,7 @@ const EqualSplitting = () => {
 
   const processReceiptImage = () => {
     setIsProcessingImage(true);
-    
-    // Simulate image processing delay
     setTimeout(() => {
-      // Mock data from receipt OCR
-      setDescription('Dinner at Restaurant');
-      setTotalAmount('1250.00');
       setIsProcessingImage(false);
       toast.success("Receipt processed successfully!");
     }, 2000);
@@ -99,32 +94,34 @@ const EqualSplitting = () => {
     setIsSubmitting(true);
 
     try {
-      // Prepare the expense data
       const selectedMemberIds = Object.entries(selectedMembers)
         .filter(([_, isSelected]) => isSelected)
         .map(([id, _]) => id);
 
       const amountPerPerson = getAmountPerPerson();
-      
+
       const expenseData = {
         groupId,
+        group,
         description,
         totalAmount: parseFloat(totalAmount),
-        splitType: 'equal',
         members: selectedMemberIds.map(id => ({
           memberId: id,
           amount: amountPerPerson
         }))
       };
-
-      // Mock API call - replace with your actual API endpoint
-      console.log("Submitting expense:", expenseData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast.success("Expense added successfully!");
-      navigate(`/groups/${groupId}`);
+      const response = await fetch('http://localhost:3000/routes/unequalsplit', {
+        method: "POST",
+        headers: {
+          Authorization: AuthorizationToken,
+          "content-type": "application/json"
+        },
+        body: JSON.stringify(expenseData)
+      })
+      if (response.ok) {
+        toast.success("Expense added successfully!");
+        navigate(`/groups/${groupId}`);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to add expense");
@@ -132,7 +129,6 @@ const EqualSplitting = () => {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className='flex'>
       <div className="nav">
@@ -191,9 +187,9 @@ const EqualSplitting = () => {
                 id="receipt-upload"
               />
               <label htmlFor="receipt-upload">
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
+                <Button
+                  variant="secondary"
+                  size="sm"
                   icon={Camera}
                   className="cursor-pointer"
                 >
@@ -201,9 +197,9 @@ const EqualSplitting = () => {
                 </Button>
               </label>
               {receiptImage && (
-                <Button 
-                  variant="primary" 
-                  size="sm" 
+                <Button
+                  variant="primary"
+                  size="sm"
                   icon={FileText}
                   onClick={processReceiptImage}
                   disabled={isProcessingImage}
@@ -216,12 +212,12 @@ const EqualSplitting = () => {
 
           {receiptImage && (
             <div className="relative">
-              <img 
-                src={receiptImage} 
-                alt="Receipt" 
+              <img
+                src={receiptImage}
+                alt="Receipt"
                 className="w-full h-48 object-cover rounded-md"
               />
-              <button 
+              <button
                 className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full"
                 onClick={() => setReceiptImage(null)}
               >
@@ -241,21 +237,20 @@ const EqualSplitting = () => {
               </span>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             {members.map(member => (
-              <div 
-                key={member._id} 
-                className={`flex items-center justify-between p-3 rounded-lg border ${
-                  selectedMembers[member._id] ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'
-                } cursor-pointer transition-colors`}
+              <div
+                key={member._id}
+                className={`flex items-center justify-between p-3 rounded-lg border ${selectedMembers[member._id] ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200'
+                  } cursor-pointer transition-colors`}
                 onClick={() => toggleMemberSelection(member._id)}
               >
                 <div className="flex items-center space-x-3">
                   <input
                     type="checkbox"
                     checked={selectedMembers[member._id] || false}
-                    onChange={() => {}}
+                    onChange={() => { }}
                     className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                   />
                   <div className="flex items-center space-x-3">
@@ -267,7 +262,7 @@ const EqualSplitting = () => {
                     <span className="font-medium">{member.username}</span>
                   </div>
                 </div>
-                
+
                 {selectedMembers[member._id] && (
                   <div className="text-indigo-600 font-medium">
                     ₹{getAmountPerPerson().toFixed(2)}

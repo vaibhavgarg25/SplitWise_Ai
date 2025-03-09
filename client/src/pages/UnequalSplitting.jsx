@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, Upload, DollarSign, Camera, FileText, 
+import {
+  ArrowLeft, Upload, DollarSign, Camera, FileText,
   Check, X, Plus, Trash2, Users, Receipt
 } from 'lucide-react';
 import Button from '../components/Button';
@@ -49,38 +49,38 @@ const UnequalSplitting = () => {
     fetchMembers();
   }, [groupId, AuthorizationToken]);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
       reader.onload = (event) => {
         setReceiptImage(event.target?.result);
       };
       reader.readAsDataURL(file);
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const response = await fetch("http://localhost:3000/routes/getsplit", {
+        method: "POST",
+        body: formData, 
+      });
+      const data = await response.json();
+      console.log(data.geminiResponse);
+      setItems(data.geminiResponse)
+    } catch (error) {
+      console.error("Error uploading image:", error);
     }
   };
 
   const processReceiptImage = () => {
     setIsProcessingImage(true);
-    
-    // Simulate image processing delay
     setTimeout(() => {
-      // Mock data from receipt OCR
       setDescription('Dinner at Restaurant');
       setTotalAmount('1250.00');
-      
-      // Mock items from receipt
-      const mockItems = [
-        { name: 'Pizza Margherita', price: 350, assignedTo: [] },
-        { name: 'Pasta Carbonara', price: 280, assignedTo: [] },
-        { name: 'Garlic Bread', price: 120, assignedTo: [] },
-        { name: 'Tiramisu', price: 180, assignedTo: [] },
-        { name: 'Soft Drinks', price: 320, assignedTo: [] },
-      ];
-      
-      setItems(mockItems);
-      setIsProcessingImage(false);
-      toast.success("Receipt processed successfully!");
+      if(items){
+        setIsProcessingImage(false);
+        toast.success("Receipt processed successfully!");
+      }
     }, 2000);
   };
 
@@ -143,7 +143,6 @@ const UnequalSplitting = () => {
       return;
     }
 
-    // Check if all items have at least one member assigned
     const unassignedItems = items.filter(item => item.assignedTo.length === 0);
     if (unassignedItems.length > 0) {
       toast.error(`Please assign members to all items. ${unassignedItems.length} items are unassigned.`);
@@ -154,37 +153,35 @@ const UnequalSplitting = () => {
 
     try {
       const memberShares = {};
-      
+
       members.forEach(member => {
         memberShares[member._id] = calculateMemberShare(member._id);
       });
-      
+
       const expenseData = {
         groupId,
+        group,
         description,
         totalAmount: calculateTotalAmount(),
-        splitType: 'unequal',
         members: Object.entries(memberShares)
           .filter(([_, amount]) => amount > 0)
           .map(([memberId, amount]) => ({
             memberId,
             amount
           })),
-        items: items.map(item => ({
-          name: item.name,
-          price: item.price,
-          assignedTo: item.assignedTo
-        }))
       };
-
-      // Mock API call - replace with your actual API endpoint
-      console.log("Submitting expense:", expenseData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast.success("Expense added successfully!");
-      navigate(`/groups/${groupId}`);
+      const response=await fetch('http://localhost:3000/routes/unequalsplit',{
+        method:"POST",
+        headers:{
+          Authorization:AuthorizationToken,
+          "content-type":"application/json"
+        },
+        body:JSON.stringify(expenseData)
+      })
+      if(response.ok){
+        toast.success("Expense added successfully!");
+        navigate(`/groups/${groupId}`);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to add expense");
@@ -194,7 +191,6 @@ const UnequalSplitting = () => {
   };
 
   useEffect(() => {
-    // Update total amount when items change
     if (items.length > 0) {
       setTotalAmount(calculateTotalAmount().toFixed(2));
     }
@@ -223,7 +219,7 @@ const UnequalSplitting = () => {
           <div className='bg-white p-8 rounded-lg shadow-md'>
             <h2 className='text-xl font-semibold mb-6 text-center'>How would you like to add items?</h2>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-              <div 
+              <div
                 className='border border-gray-200 rounded-lg p-6 text-center hover:border-indigo-500 hover:bg-indigo-50 cursor-pointer transition-colors'
                 onClick={() => setShowManualEntry(true)}
               >
@@ -233,8 +229,8 @@ const UnequalSplitting = () => {
                 <h3 className='text-lg font-medium mb-2'>Enter Items Manually</h3>
                 <p className='text-gray-500'>Add each item and its price manually</p>
               </div>
-              
-              <div 
+
+              <div
                 className='border border-gray-200 rounded-lg p-6 text-center hover:border-indigo-500 hover:bg-indigo-50 cursor-pointer transition-colors'
                 onClick={() => document.getElementById('receipt-upload').click()}
               >
@@ -271,13 +267,13 @@ const UnequalSplitting = () => {
 
               {receiptImage && (
                 <div className="relative">
-                  <img 
-                    src={receiptImage} 
-                    alt="Receipt" 
-                    className="w-full h-48 object-cover rounded-md"
+                  <img
+                    src={receiptImage}
+                    alt="Receipt"
+                    className="h-48 object-cover rounded-md"
                   />
                   <div className="absolute top-2 right-2 flex space-x-2">
-                    <button 
+                    <button
                       className="p-1 bg-red-500 text-white rounded-full"
                       onClick={() => {
                         setReceiptImage(null);
@@ -289,7 +285,7 @@ const UnequalSplitting = () => {
                       <X className="w-4 h-4" />
                     </button>
                     {!isProcessingImage && items.length === 0 && (
-                      <button 
+                      <button
                         className="p-1 bg-indigo-500 text-white rounded-full"
                         onClick={processReceiptImage}
                       >
@@ -297,7 +293,7 @@ const UnequalSplitting = () => {
                       </button>
                     )}
                   </div>
-                  
+
                   {isProcessingImage && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-md">
                       <div className="text-white text-center">
@@ -331,9 +327,9 @@ const UnequalSplitting = () => {
                         placeholder="0.00"
                       />
                     </div>
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       icon={Plus}
                       onClick={handleAddItem}
                       disabled={!newItemName || !newItemPrice}
@@ -351,13 +347,12 @@ const UnequalSplitting = () => {
                   <h2 className='text-lg font-semibold mb-4'>Items</h2>
                   <div className="space-y-3 max-h-96 overflow-y-auto">
                     {items.map((item, index) => (
-                      <div 
-                        key={index} 
-                        className={`border rounded-lg p-3 ${
-                          selectedItemIndex === index 
-                            ? 'border-indigo-500 bg-indigo-50' 
-                            : 'border-gray-200'
-                        } cursor-pointer transition-colors`}
+                      <div
+                        key={index}
+                        className={`border rounded-lg p-3 ${selectedItemIndex === index
+                          ? 'border-indigo-500 bg-indigo-50'
+                          : 'border-gray-200'
+                          } cursor-pointer transition-colors`}
                         onClick={() => setSelectedItemIndex(index)}
                       >
                         <div className="flex justify-between items-center">
@@ -369,7 +364,7 @@ const UnequalSplitting = () => {
                             <div className="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full">
                               {item.assignedTo.length} members
                             </div>
-                            <button 
+                            <button
                               className="text-gray-400 hover:text-red-500"
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -383,7 +378,7 @@ const UnequalSplitting = () => {
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <div className="flex justify-between items-center text-lg font-medium">
                       <span>Total</span>
@@ -391,7 +386,7 @@ const UnequalSplitting = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className='bg-white p-6 rounded-lg shadow-md md:col-span-2'>
                   {selectedItemIndex !== null ? (
                     <>
@@ -399,23 +394,22 @@ const UnequalSplitting = () => {
                         <h2 className='text-lg font-semibold'>Assign Members to "{items[selectedItemIndex].name}"</h2>
                         <span className="text-indigo-600 font-medium">₹{items[selectedItemIndex].price.toFixed(2)}</span>
                       </div>
-                      
+
                       <div className="space-y-3">
                         {members.map(member => (
-                          <div 
-                            key={member._id} 
-                            className={`flex items-center justify-between p-3 rounded-lg border ${
-                              items[selectedItemIndex].assignedTo.includes(member._id) 
-                                ? 'border-indigo-500 bg-indigo-50' 
-                                : 'border-gray-200'
-                            } cursor-pointer transition-colors`}
+                          <div
+                            key={member._id}
+                            className={`flex items-center justify-between p-3 rounded-lg border ${items[selectedItemIndex].assignedTo.includes(member._id)
+                              ? 'border-indigo-500 bg-indigo-50'
+                              : 'border-gray-200'
+                              } cursor-pointer transition-colors`}
                             onClick={() => toggleMemberForItem(selectedItemIndex, member._id)}
                           >
                             <div className="flex items-center space-x-3">
                               <input
                                 type="checkbox"
                                 checked={items[selectedItemIndex].assignedTo.includes(member._id)}
-                                onChange={() => {}}
+                                onChange={() => { }}
                                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                               />
                               <div className="flex items-center space-x-3">
@@ -427,7 +421,7 @@ const UnequalSplitting = () => {
                                 <span className="font-medium">{member.username}</span>
                               </div>
                             </div>
-                            
+
                             {items[selectedItemIndex].assignedTo.includes(member._id) && (
                               <div className="text-indigo-600 font-medium">
                                 ₹{(items[selectedItemIndex].price / items[selectedItemIndex].assignedTo.length).toFixed(2)}
@@ -470,7 +464,7 @@ const UnequalSplitting = () => {
                     }
                     return null;
                   })}
-                  
+
                   <div className="flex justify-between items-center pt-3 text-lg font-medium">
                     <span>Total Amount</span>
                     <span>₹{calculateTotalAmount().toFixed(2)}</span>

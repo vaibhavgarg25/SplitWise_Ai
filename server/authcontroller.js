@@ -4,7 +4,10 @@ const bcrypt = require('bcryptjs')
 const Group = require('./models/group-model')
 const mongoose = require('mongoose');
 const Expense = require('./models/expense-model');
-
+const multer = require("multer");
+const Tesseract = require("tesseract.js");
+const upload = multer({ storage: multer.memoryStorage() });
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const signup = async (req, res) => {
     try {
@@ -182,15 +185,37 @@ const getexpenses = async (req, res, next) => {
 
 const getsplit = async (req, res, next) => {
     try {
-        const { GoogleGenerativeAI } = require("@google/generative-ai");
-
+        if (!req.file) {
+            return res.status(400).json({ error: "Image file is required." });
+        }
+        const imageBuffer = req.file.buffer;
+        const base64Image = imageBuffer.toString("base64");
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = "Extract items, quantity, and price from the bill image. If qty > 1, update the price as (price * qty) and append the qty in brackets next to the item name. Return a valid JSON array where each object contains a 'name' key for the item name, a 'price' key for the updated total price, and an 'assignedTo' key with an empty array []. Include 'Total GST' as an item with its price. Ensure the output is a clean JSON array of objects without extra formatting or strings, so it can be directly used in JavaScript.";
+        const result = await model.generateContent([
+            { text: prompt },
+            { inlineData: { mimeType: req.file.mimetype, data: base64Image } },
+        ]);
+        const responseText = result.response?.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini";
+        const rawResponse = responseText.replace(/^```json/, "").replace(/```$/, "").trim();
+        const jsonResponse = JSON.parse(rawResponse);
+        return res.status(200).json({ success: true, geminiResponse: jsonResponse });
+    } catch (error) {
+        console.error("Error in getsplit:", error);
+        return res.status(500).json({ success: false, error: error.message });
+    }
+};
 
-        const prompt = "who will win today in india vs aus";
-
-        const result = await model.generateContent(prompt);
-        return res.status(201).json(result.response.text())
+const unequalsplit=async(req,res,next)=>{
+    try {
+        const {groupId,group,description,members,amount,totalAmount}=req.body
+        const groupexist=await Expense.findOne({groupId:groupId})
+        if(groupexist){
+            await Expense.updateOne({groupId:groupId}, { $push: { expenses: {description,date:new Date(),members,totalAmount}} })
+            return res.status(200).json("updated sucessfully")
+        }
+        return res.status(400).json("group does not exist")
     } catch (error) {
         next(error)
     }
@@ -207,5 +232,7 @@ module.exports = {
     deletegroupbyid,
     getgroupmembers,
     getexpenses,
-    getsplit
+    getsplit,
+    upload,
+    unequalsplit
 }

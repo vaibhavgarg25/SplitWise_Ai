@@ -61,7 +61,7 @@ const GroupDetails = () => {
       <div className='w-screen ml-6 space-y-6'>
         <div className='flex justify-between items-center'>
           <div className='flex items-center space-x-3'>
-            <ArrowLeft className='cursor-pointer' onClick={() => navigate(-1)} />
+            <ArrowLeft className='cursor-pointer' onClick={() => navigate('/groups')} />
             <h1 className='text-2xl mt-5 font-bold text-gray-900 dark:text-black'>{group}</h1>
           </div>
         </div>
