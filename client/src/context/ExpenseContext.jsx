@@ -11,7 +11,7 @@ export const ExpenseProvider = ({ children }) => {
   const { AuthorizationToken } = useAuth();
 
   const fetchData = async () => {
-    const response = await fetch('http://localhost:3000/routes/user', {
+    const response = await fetch('https://angelic-learning.up.railway.app/routes/user', {
       method: "GET",
       headers: {
         Authorization: AuthorizationToken,
@@ -24,7 +24,7 @@ export const ExpenseProvider = ({ children }) => {
   
   const fetchExpenses = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:3000/routes/getuseractivity/${userId}`, {
+      const response = await fetch(`https://angelic-learning.up.railway.app/routes/getuseractivity/${userId}`, {
         method: 'GET',
         headers: {
           Authorization: AuthorizationToken

@@ -21,7 +21,7 @@ const EqualSplitting = () => {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/routes/getgroupmembers/${groupId}`, {
+      const response = await fetch(`https://angelic-learning.up.railway.app/routes/getgroupmembers/${groupId}`, {
         method: "GET",
         headers: {
           Authorization: AuthorizationToken
@@ -110,7 +110,7 @@ const EqualSplitting = () => {
           amount: amountPerPerson
         }))
       };
-      const response = await fetch('http://localhost:3000/routes/unequalsplit', {
+      const response = await fetch('https://angelic-learning.up.railway.app/routes/unequalsplit', {
         method: "POST",
         headers: {
           Authorization: AuthorizationToken,

@@ -17,7 +17,7 @@ const GroupDetails = () => {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/routes/getgroupmembers/${groupId}`, {
+      const response = await fetch(`https://angelic-learning.up.railway.app/routes/getgroupmembers/${groupId}`, {
         method: "GET",
         headers: {
           Authorization: AuthorizationToken
@@ -35,7 +35,7 @@ const GroupDetails = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/routes/getexpenses/${groupId}`, {
+      const response = await fetch(`https://angelic-learning.up.railway.app/routes/getexpenses/${groupId}`, {
         method: "GET",
         headers: {
           Authorization: AuthorizationToken

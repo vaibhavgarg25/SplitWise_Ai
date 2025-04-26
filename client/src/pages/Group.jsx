@@ -27,7 +27,7 @@ const Groups = () => {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch("http://localhost:3000/routes/user", {
+      const response = await fetch("https://angelic-learning.up.railway.app/routes/user", {
         method: "GET",
         headers: {
           Authorization: AuthorizationToken,
@@ -49,7 +49,7 @@ const Groups = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:3000/routes/getgroups/${user._id}`,
+        `https://angelic-learning.up.railway.app/routes/getgroups/${user._id}`,
         {
           method: "GET",
           headers: {
@@ -70,7 +70,7 @@ const Groups = () => {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch("http://localhost:3000/routes/users", {
+      const response = await fetch("https://angelic-learning.up.railway.app/routes/users", {
         method: "GET",
         headers: {
           Authorization: AuthorizationToken,
@@ -113,7 +113,7 @@ const Groups = () => {
         // expenses: []
       };
       try {
-        const response = await fetch('http://localhost:3000/routes/creategroup', {
+        const response = await fetch('https://angelic-learning.up.railway.app/routes/creategroup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ const Groups = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/routes/deletegroup/${id}`, {
+      const response = await fetch(`https://angelic-learning.up.railway.app/routes/deletegroup/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: AuthorizationToken
