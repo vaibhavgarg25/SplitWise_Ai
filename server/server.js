@@ -8,12 +8,15 @@ const errormiddleware = require('./middlewares/error-middleware');
 const cors = require('cors');
 
 const corsOptions = {
-    origin: "https://split-wise-ai.vercel.app", 
-    methods: "POST,GET,PUT,DELETE,PATCH,HEAD", 
-    credentials: true,
+  origin: ["https://split-wise-ai.vercel.app"],
+  methods: ["POST", "GET", "PUT", "DELETE", "PATCH", "HEAD"], 
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"], 
+  optionsSuccessStatus: 200,
 };
 
-app.use(cors(corsOptions));
+app.use(cors(corsOptions)); 
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use('/routes', routes);
 app.use(errormiddleware);
