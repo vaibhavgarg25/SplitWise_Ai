@@ -52,8 +52,6 @@ const Settings = () => {
     fetchData();
   }, []);
 
- 
-
   return (
     <div className="flex">
       <div className="nav">

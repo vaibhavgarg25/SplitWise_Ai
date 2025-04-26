@@ -20,4 +20,5 @@ router.route('/getgroupmembers/:id').get(authmiddleware,authcontroller.getgroupm
 router.route('/getexpenses/:id').get(authmiddleware,authcontroller.getexpenses)
 router.route('/getsplit').post(upload.single("image"),authcontroller.getsplit)
 router.route('/unequalsplit').post(authmiddleware,authcontroller.unequalsplit)
+router.route('/getuseractivity/:userId').get(authmiddleware,authcontroller.getUserActivityInGroup)
 module.exports=router;  

@@ -12,7 +12,7 @@ const SignUp = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const storetokeninls=useAuth()
+  const {storetokeninls}=useAuth()
 
   const handleSubmit = async (e) => {
     e.preventDefault();

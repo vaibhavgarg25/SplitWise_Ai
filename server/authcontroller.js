@@ -89,13 +89,31 @@ const creategroup = async (req, res, next) => {
     try {
         const { name, description, members } = req.body;
         const ids = members.map((ele) => new mongoose.Types.ObjectId(ele._id));
-        const newgroup = await Group.create({ groupname: name, groupdesc: description, members: ids })
-        const updateuser = await User.updateMany({ _id: { $in: members } }, { $push: { groups: newgroup._id } })
-        return res.status(201).json(newgroup)
+        const newgroup = await Group.create({ 
+            groupname: name, 
+            groupdesc: description, 
+            members: ids 
+        });
+
+        await User.updateMany(
+            { _id: { $in: members } }, 
+            { $push: { groups: newgroup._id } }
+        );
+
+        const newExpense = await Expense.create({
+            groupId: newgroup._id,
+            groupname: name,
+            groupdesc: description,
+            expenseName: name,
+            expenses: [] 
+        });
+
+        return res.status(201).json({ group: newgroup, expense: newExpense });
     } catch (error) {
-        console.log(error)
+        next(error);
     }
-}
+};
+
 
 const getgroups = async (req, res, next) => {
     try {
@@ -131,17 +149,27 @@ const getgroups = async (req, res, next) => {
 const deletegroupbyid = async (req, res, next) => {
     try {
         const groupId = req.params.id;
+
         if (!mongoose.Types.ObjectId.isValid(groupId)) {
             return res.status(400).json({ error: "Invalid group ID" });
         }
+
         const objectId = new mongoose.Types.ObjectId(groupId);
+
         await Group.deleteOne({ _id: objectId });
-        await User.updateMany({ groups: objectId }, { $pull: { groups: objectId } });
-        return res.json({ message: "Group deleted successfully" });
+
+        await User.updateMany(
+            { groups: objectId },
+            { $pull: { groups: objectId } }
+        );
+        await Expense.deleteOne({ groupId: objectId });
+
+        return res.json({ message: "Group and related expenses deleted successfully" });
     } catch (error) {
         next(error);
     }
 };
+
 
 const getgroupmembers = async (req, res, next) => {
     try {
@@ -221,6 +249,58 @@ const unequalsplit=async(req,res,next)=>{
     }
 }
 
+const getUserActivityInGroup = async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+  
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: "Invalid userId" });
+      }
+  
+      
+      const user = await User.findById(userId, 'groups');
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      const groupIds = user.groups; 
+      if (!groupIds || groupIds.length === 0) {
+        return res.status(404).json({ error: "User is not part of any group" });
+      }
+  
+      let totalSpent = 0;
+      let userActivities = [];
+  
+      for (const groupId of groupIds) {
+        if (!mongoose.Types.ObjectId.isValid(groupId)) continue; 
+        const expenses = await Expense.findOne({ groupId: groupId });
+        if (!expenses) continue;
+  
+        expenses.expenses.forEach((expense) => {
+          expense.members.forEach((member) => {
+            if (member.memberId.toString() === userId) {
+              totalSpent += member.amount;
+              userActivities.push({
+                description: expense.description,
+                date: expense.date,
+                amountSpent: member.amount
+              });
+            }
+          });
+        });
+      }
+  
+      return res.json({
+        totalSpent,
+        activities: userActivities
+      });
+  
+    } catch (error) {
+      next(error);
+    }
+  };  
+
+
 module.exports = {
     signup,
     login,
@@ -234,5 +314,6 @@ module.exports = {
     getexpenses,
     getsplit,
     upload,
-    unequalsplit
+    unequalsplit,
+    getUserActivityInGroup
 }

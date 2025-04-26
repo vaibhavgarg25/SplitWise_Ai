@@ -1,13 +1,57 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from '../context/Context';
 
 const ExpenseContext = createContext();
 
 export const ExpenseProvider = ({ children }) => {
-  const [expenses, setExpenses] = useState([
-    { id: 1, description: 'Dinner at Italian Restaurant', amount: 120.50, paidBy: 'John', date: '2024-03-15', participants: ['John', 'Sarah', 'Mike'] },
-    { id: 2, description: 'Monthly Groceries', amount: 245.75, paidBy: 'Sarah', date: '2024-03-14', participants: ['John', 'Sarah'] },
-    { id: 3, description: 'Utilities - March', amount: 180.00, paidBy: 'Mike', date: '2024-03-13', participants: ['John', 'Sarah', 'Mike'] }
-  ]);
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
+  const [user,setUser]=useState({_id:'',username: '', email: '' })
+  const { AuthorizationToken } = useAuth();
+
+  const fetchData = async () => {
+    const response = await fetch('http://localhost:3000/routes/user', {
+      method: "GET",
+      headers: {
+        Authorization: AuthorizationToken,
+      },
+    });
+    const data = await response.json();
+    setUser({ _id: data._id, username: data.username, email: data.email });
+    return data._id; 
+  };
+  
+  const fetchExpenses = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:3000/routes/getuseractivity/${userId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: AuthorizationToken
+        },
+      });
+      const data = await response.json(); 
+      const { totalSpent, activities } = data;
+      setExpenses(activities);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch data');
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const userId = await fetchData();  
+        await fetchExpenses(userId); 
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+  
+    fetchAllData();
+  }, []);
 
   const addExpense = (expense) => {
     const newExpense = {
@@ -22,7 +66,7 @@ export const ExpenseProvider = ({ children }) => {
   };
 
   return (
-    <ExpenseContext.Provider value={{ expenses, addExpense, deleteExpense }}>
+    <ExpenseContext.Provider value={{ expenses, loading, error, addExpense, deleteExpense }}>
       {children}
     </ExpenseContext.Provider>
   );
