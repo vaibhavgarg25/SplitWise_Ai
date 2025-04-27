@@ -18,7 +18,7 @@ const SignUp = () => {
     e.preventDefault();
     // console.log(user);
     try {
-      const response = await fetch("https://splitwiseai-production.up.railway.app/routes/signup", {
+      const response = await fetch("https://splitwise-ai.onrender.com/routes/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -14,7 +14,7 @@ const Settings = () => {
   const params=useParams()
 
   const fetchData = async () => {
-    const response = await fetch('https://splitwiseai-production.up.railway.app/routes/user', {
+    const response = await fetch('https://splitwise-ai.onrender.com/routes/user', {
       method: "GET",
       headers: {
         Authorization: AuthorizationToken,
@@ -29,7 +29,7 @@ const Settings = () => {
     e.preventDefault()
     const id=user._id
     try {
-        const response=await fetch(`https://splitwiseai-production.up.railway.app/routes/update/${id}`,{
+        const response=await fetch(`https://splitwise-ai.onrender.com/routes/update/${id}`,{
             method:"PATCH",
             headers:{
                 'Content-Type':'application/json',

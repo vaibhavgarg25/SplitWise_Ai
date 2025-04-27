@@ -11,7 +11,7 @@ export const ExpenseProvider = ({ children }) => {
   const { AuthorizationToken } = useAuth();
 
   const fetchData = async () => {
-    const response = await fetch('https://splitwiseai-production.up.railway.app/routes/user', {
+    const response = await fetch('https://splitwise-ai.onrender.com/routes/user', {
       method: "GET",
       headers: {
         Authorization: AuthorizationToken,
@@ -24,7 +24,7 @@ export const ExpenseProvider = ({ children }) => {
   
   const fetchExpenses = async (userId) => {
     try {
-      const response = await fetch(`https://splitwiseai-production.up.railway.app/routes/getuseractivity/${userId}`, {
+      const response = await fetch(`https://splitwise-ai.onrender.com/routes/getuseractivity/${userId}`, {
         method: 'GET',
         headers: {
           Authorization: AuthorizationToken

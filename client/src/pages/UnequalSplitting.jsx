@@ -28,7 +28,7 @@ const UnequalSplitting = () => {
 
   const fetchMembers = async () => {
     try {
-      const response = await fetch(`https://splitwiseai-production.up.railway.app/routes/getgroupmembers/${groupId}`, {
+      const response = await fetch(`https://splitwise-ai.onrender.com/routes/getgroupmembers/${groupId}`, {
         method: "GET",
         headers: {
           Authorization: AuthorizationToken
@@ -60,7 +60,7 @@ const UnequalSplitting = () => {
     const formData = new FormData();
     formData.append("image", file);
     try {
-      const response = await fetch("https://splitwiseai-production.up.railway.app/routes/getsplit", {
+      const response = await fetch("https://splitwise-ai.onrender.com/routes/getsplit", {
         method: "POST",
         body: formData, 
       });
@@ -170,7 +170,7 @@ const UnequalSplitting = () => {
             amount
           })),
       };
-      const response=await fetch('https://splitwiseai-production.up.railway.app/routes/unequalsplit',{
+      const response=await fetch('https://splitwise-ai.onrender.com/routes/unequalsplit',{
         method:"POST",
         headers:{
           Authorization:AuthorizationToken,
