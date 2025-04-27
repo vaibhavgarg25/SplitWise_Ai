@@ -21,7 +21,7 @@ const Signin = () => {
 
     
     try {
-      const response = await fetch('https://angelic-learning.up.railway.app/routes/signin', {
+      const response = await fetch('https://splitwiseai-production.up.railway.app/routes/signin', {
         method: "POST",
         headers: {
           "content-type": "application/json"

@@ -22,7 +22,7 @@ function App() {
   const {AuthorizationToken}=useAuth()
   
   const fetchuser=async()=>{
-    const response = await fetch('https://angelic-learning.up.railway.app/routes/user', {
+    const response = await fetch('https://splitwiseai-production.up.railway.app/routes/user', {
       method: "GET",
       headers: {
         Authorization: AuthorizationToken,
