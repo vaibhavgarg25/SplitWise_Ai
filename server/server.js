@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT;
 
 const corsOptions = {
-  origin: ["https://split-wise-ai.vercel.app"],
+  origin: "*",
   methods: ["POST", "GET", "PUT", "DELETE", "PATCH", "HEAD"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
