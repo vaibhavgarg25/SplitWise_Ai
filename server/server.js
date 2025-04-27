@@ -6,7 +6,7 @@ const connectdb = require('./utils/db');
 const errormiddleware = require('./middlewares/error-middleware');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 const corsOptions = {
   origin: ["https://split-wise-ai.vercel.app"],
