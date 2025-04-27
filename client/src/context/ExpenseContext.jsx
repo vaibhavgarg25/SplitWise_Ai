@@ -32,7 +32,12 @@ export const ExpenseProvider = ({ children }) => {
       });
       const data = await response.json(); 
       const { totalSpent, activities } = data;
-      setExpenses(activities);
+      if(activities){
+        setExpenses(activities);
+      }
+      else{
+        setExpenses([]);
+      } 
       setLoading(false);
     } catch (err) {
       setError('Failed to fetch data');
