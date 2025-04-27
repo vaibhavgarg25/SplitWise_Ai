@@ -265,7 +265,10 @@ const getUserActivityInGroup = async (req, res, next) => {
   
       const groupIds = user.groups; 
       if (!groupIds || groupIds.length === 0) {
-        return res.status(404).json({ error: "User is not part of any group" });
+        return res.json({
+          totalSpent: null,
+          activities: []
+        });
       }
   
       let totalSpent = 0;
